@@ -2,25 +2,24 @@ export interface ServerConfig {
     cpu: string;
     gpu: string;
     memory: number; // in GB
-    utilizationRate: number; // percentage
 }
 
-export interface DataCenter {
+export interface DataCenterModel {
     name: string;
-    location: string;
     servers: ServerConfig[];
+    utilizationRate: number; // between 0 and 1
     pue: number; // Power Usage Effectiveness
 }
 
-export interface EnergyConsumptionReport {
-    totalEnergyConsumed: number; // in kWh
-    cost: number; // in currency unit
+export interface EnergyConsumption {
+    totalKWh: number;
+    cost: number;
     carbonFootprint: number; // in kg CO2
 }
 
 export interface ElectricityRate {
     location: string;
-    ratePerKWh: number; // in currency unit per kWh
+    ratePerKWh: number; // in currency per kWh
 }
 
 export interface CarbonEmissionFactor {
