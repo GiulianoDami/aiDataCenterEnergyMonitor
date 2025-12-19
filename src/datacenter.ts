@@ -13,19 +13,19 @@ export class DataCenter {
         this.location = location;
     }
 
-    public getEstimatedEnergyConsumption(hours: number): number {
+    public calculateTotalEnergyConsumption(hours: number): number {
         const totalServerPower = this.servers.reduce((sum, server) => sum + server.getPowerUsage(), 0);
         return totalServerPower * this.pue * hours;
     }
 
-    public getProjectedCost(hours: number): number {
-        const energyConsumption = this.getEstimatedEnergyConsumption(hours);
+    public calculateCost(hours: number): number {
+        const energyConsumption = this.calculateTotalEnergyConsumption(hours);
         const costCalculator = new EnergyCostCalculator(this.location);
         return costCalculator.calculateCost(energyConsumption);
     }
 
-    public getEstimatedCarbonFootprint(hours: number): number {
-        const energyConsumption = this.getEstimatedEnergyConsumption(hours);
+    public calculateCarbonFootprint(hours: number): number {
+        const energyConsumption = this.calculateTotalEnergyConsumption(hours);
         const carbonCalculator = new CarbonFootprintCalculator(this.location);
         return carbonCalculator.calculateFootprint(energyConsumption);
     }
