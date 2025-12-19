@@ -1,71 +1,16 @@
-// src/datacenter.ts
-export class Server {
-    cpuCores: number;
-    gpuCount: number;
-    memoryGB: number;
-    powerDrawWatts: number;
-
-    constructor(options: { cpuCores: number; gpuCount: number; memoryGB: number; powerDrawWatts: number }) {
-        this.cpuCores = options.cpuCores;
-        this.gpuCount = options.gpuCount;
-        this.memoryGB = options.memoryGB;
-        this.powerDrawWatts = options.powerDrawWatts;
-    }
-}
-
-export class DataCenter {
-    name: string;
-    location: string;
-    servers: Server[];
-    utilization: number;
-    pue: number;
-
-    constructor(options: { name: string; location: string; servers: Server[]; pue?: number }) {
-        this.name = options.name;
-        this.location = options.location;
-        this.servers = options.servers;
-        this.utilization = 50; // Default utilization
-        this.pue = options.pue ?? 1.5; // Default PUE
-    }
-
-    setUtilization(utilization: number) {
-        this.utilization = utilization;
-    }
-
-    calculateDailyEnergyConsumption(): number {
-        let totalPowerDraw = 0;
-        for (const server of this.servers) {
-            totalPowerDraw += server.powerDrawWatts * (this.utilization / 100);
-        }
-        const totalEnergyConsumption = totalPowerDraw * 24;
-        return totalEnergyConsumption * this.pue / 1000; // kWh
-    }
-
-    calculateDailyCost(): number {
-        // Stub electricity rate data
-        const electricityRates = {
-            'Virginia, USA': 0.15, // $ per kWh
-            'California, USA': 0.25,
-            'Texas, USA': 0.12,
-            'Europe, Germany': 0.20,
-        };
-
-        const rate = electricityRates[this.location] || 0.20; // Default rate
-        const energyConsumption = this.calculateDailyEnergyConsumption();
-        return energyConsumption * rate;
-    }
-
-    calculateCarbonFootprint(): number {
-        //Stub carbon emission factors
-        const emissionFactors = {
-            'Virginia, USA': 0.4, // kg CO2e per kWh
-            'California, USA': 0.3,
-            'Texas, USA': 0.5,
-            'Europe, Germany': 0.2,
-        };
-
-        const factor = emissionFactors[this.location] || 0.4;
-        const energyConsumption = this.calculateDailyEnergyConsumption();
-        return energyConsumption * factor;
-    }
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "lib": ["ES2020", "DOM"],
+    "sourceMap": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }
