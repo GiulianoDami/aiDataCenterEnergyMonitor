@@ -1,82 +1,124 @@
-// src/datacenter.ts
-export class Server {
-    cpuCores: number;
-    gpuCount: number;
-    memoryGB: number;
-    powerDrawWatts: number;
+# Contributing to aiDataCenterEnergyMonitor
 
-    constructor({ cpuCores, gpuCount, memoryGB, powerDrawWatts }: { cpuCores: number; gpuCount: number; memoryGB: number; powerDrawWatts: number }) {
-        this.cpuCores = cpuCores;
-        this.gpuCount = gpuCount;
-        this.memoryGB = memoryGB;
-        this.powerDrawWatts = powerDrawWatts;
-    }
-}
+Thank you for your interest in contributing to the aiDataCenterEnergyMonitor project! We welcome contributions from the community to help improve and expand the functionality of our library. Below are the guidelines to follow when contributing to this project.
 
-export class DataCenter {
-    name: string;
-    location: string;
-    servers: Server[];
-    utilization: number;
-    pue: number;
+## Code of Conduct
 
-    constructor({ name, location, servers, pue = 1.5 }: { name: string; location: string; servers: Server[]; pue?: number }) {
-        this.name = name;
-        this.location = location;
-        this.servers = servers;
-        this.utilization = 50; // Default utilization
-        this.pue = pue;
-    }
+Please review and adhere to our [Code of Conduct](CODE_OF_CONDUCT.md). This document outlines the expected behavior for all contributors and helps ensure a welcoming and respectful environment.
 
-    setUtilization(utilization: number) {
-        this.utilization = utilization;
-    }
+## How to Contribute
 
-    calculateDailyEnergyConsumption(): number {
-        let totalPowerDraw = 0;
-        for (const server of this.servers) {
-            totalPowerDraw += server.powerDrawWatts;
-        }
+### Reporting Issues
 
-        const energyConsumptionWatts = totalPowerDraw * (this.utilization / 100) * 24;
-        const energyConsumptionKwh = energyConsumptionWatts / 1000;
+If you encounter any bugs or have suggestions for new features, please open an issue on our [GitHub Issues page](https://github.com/yourusername/aiDataCenterEnergyMonitor/issues). When reporting an issue, please provide as much detail as possible, including:
 
-        return energyConsumptionKwh * this.pue;
-    }
+- A clear and descriptive title
+- Steps to reproduce the issue
+- Expected behavior
+- Actual behavior
+- Screenshots or error logs, if applicable
+- Your operating system and version
+- Node.js version
+- Any other relevant information
 
-    calculateDailyCost(): number {
-        // Stub data for electricity rates (replace with API integration)
-        const electricityRates: { [location: string]: number } = {
-            'Virginia, USA': 0.15, // USD per kWh
-            'California, USA': 0.25,
-            'Texas, USA': 0.12,
-            'Europe, Germany': 0.30, //EUR per kWh
-        };
+### Submitting Pull Requests
 
-        const rate = electricityRates[this.location] || 0.20; // Default rate
+To submit a pull request, follow these steps:
 
-        const dailyEnergyConsumption = this.calculateDailyEnergyConsumption();
-        return dailyEnergyConsumption * rate;
-    }
+1. **Fork the Repository:** Click the "Fork" button on the top right corner of the [GitHub repository](https://github.com/yourusername/aiDataCenterEnergyMonitor) to create a copy of the project in your GitHub account.
 
-    calculateCarbonFootprint(): number {
-        // Stub data for carbon emission factors (replace with more accurate data)
-        const emissionFactors: { [energySource: string]: number } = {
-            coal: 0.9, // kg CO2e per kWh
-            gas: 0.4,
-            renewable: 0.1,
-        };
+2. **Clone Your Fork:** Clone your forked repository to your local machine using the following command:
+   bash
+   git clone https://github.com/yourusername/aiDataCenterEnergyMonitor.git
+   
 
-        // Assume a mix of energy sources (replace with actual data)
-        const energySourceMix = { coal: 0.3, gas: 0.4, renewable: 0.3 };
+3. **Create a New Branch:** Create a new branch for your changes. Use a descriptive name for your branch that reflects the changes you are making:
+   bash
+   git checkout -b feature/your-feature-name
+   
 
-        let totalEmissions = 0;
-        const dailyEnergyConsumption = this.calculateDailyEnergyConsumption();
+4. **Make Changes:** Make the necessary changes to the codebase. Ensure that your changes are well-documented and follow the existing coding style and conventions.
 
-        for (const [source, percentage] of Object.entries(energySourceMix)) {
-            totalEmissions += dailyEnergyConsumption * percentage * emissionFactors[source as keyof typeof emissionFactors];
-        }
+5. **Test Your Changes:** Run the test suite to ensure that your changes do not break existing functionality. If you add new features, include tests to cover them:
+   bash
+   npm test
+   
 
-        return totalEmissions;
-    }
-}
+6. **Commit Your Changes:** Commit your changes with a clear and descriptive commit message:
+   bash
+   git commit -m "Add your descriptive commit message here"
+   
+
+7. **Push Your Changes:** Push your changes to your forked repository:
+   bash
+   git push origin feature/your-feature-name
+   
+
+8. **Open a Pull Request:** Go to the [Pull Requests page](https://github.com/yourusername/aiDataCenterEnergyMonitor/pulls) of the original repository and click the "New Pull Request" button. Select your branch as the source branch and the main branch of the original repository as the target branch. Provide a clear and descriptive title and description for your pull request.
+
+9. **Review Process:** Your pull request will be reviewed by the project maintainers. Be prepared to make additional changes based on feedback.
+
+10. **Merge:** Once your pull request has been approved, it will be merged into the main branch of the original repository.
+
+## Development Setup
+
+### Prerequisites
+
+- Node.js (version 18 or higher)
+- npm or yarn
+
+### Installation
+
+1. **Clone the Repository:**
+   bash
+   git clone https://github.com/yourusername/aiDataCenterEnergyMonitor.git
+   
+
+2. **Navigate to the Project Directory:**
+   bash
+   cd aiDataCenterEnergyMonitor
+   
+
+3. **Install Dependencies:**
+   bash
+   npm install
+   
+   or
+   bash
+   yarn install
+   
+
+### Running the Test Suite
+
+Run the test suite to verify that everything is working correctly:
+bash
+npm test
+
+or
+bash
+yarn test
+
+
+### Building the Project
+
+Build the project to compile TypeScript files into JavaScript:
+bash
+npm run build
+
+or
+bash
+yarn build
+
+
+## Coding Standards
+
+- Follow the existing coding style and conventions.
+- Write clear and concise comments.
+- Ensure that your code is well-documented.
+- Write unit tests for new features and bug fixes.
+
+## License
+
+By contributing to aiDataCenterEnergyMonitor, you agree that your contributions will be licensed under the [MIT License](LICENSE).
+
+We appreciate your contributions and look forward to working with you!
