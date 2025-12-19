@@ -1,73 +1,39 @@
-export class Server {
-    cpuCores: number;
-    gpuCount: number;
-    memoryGB: number;
-    powerDrawWatts: number;
-
-    constructor({ cpuCores, gpuCount, memoryGB, powerDrawWatts }: { cpuCores: number; gpuCount: number; memoryGB: number; powerDrawWatts: number }) {
-        this.cpuCores = cpuCores;
-        this.gpuCount = gpuCount;
-        this.memoryGB = memoryGB;
-        this.powerDrawWatts = powerDrawWatts;
-    }
-}
-
-export class DataCenter {
-    name: string;
-    location: string;
-    servers: Server[];
-    utilization: number;
-    pue: number;
-
-    constructor({ name, location, servers, pue = 1.5 }: { name: string; location: string; servers: Server[]; pue?: number }) {
-        this.name = name;
-        this.location = location;
-        this.servers = servers;
-        this.utilization = 50; //default utilization
-        this.pue = pue;
-    }
-
-    setUtilization(utilization: number) {
-        this.utilization = utilization;
-    }
-
-    calculateDailyEnergyConsumption(): number {
-        let totalPowerDraw = 0;
-        for (const server of this.servers) {
-            totalPowerDraw += server.powerDrawWatts;
-        }
-
-        const totalEnergyConsumptionWatts = totalPowerDraw * (this.utilization / 100);
-        const totalEnergyConsumptionKwh = totalEnergyConsumptionWatts * 24 / 1000;
-
-        return totalEnergyConsumptionKwh * this.pue;
-    }
-
-    calculateDailyCost(): number {
-        // Stub electricity rate data - replace with API integration
-        const electricityRates = {
-            'Virginia, USA': 0.15, // $ per kWh
-            'California, USA': 0.25,
-            'Texas, USA': 0.12,
-            'Europe, Germany': 0.30
-        };
-
-        const rate = electricityRates[this.location] || 0.20; // Default rate
-        const energyConsumptionKwh = this.calculateDailyEnergyConsumption();
-        return energyConsumptionKwh * rate;
-    }
-
-    calculateCarbonFootprint(): number {
-        // Stub carbon emission factors - replace with more accurate data
-        const emissionFactors = {
-            'Virginia, USA': 0.40, // kg CO2e per kWh (coal heavy mix)
-            'California, USA': 0.30, // kg CO2e per kWh (renewable mix)
-            'Texas, USA': 0.50,
-            'Europe, Germany': 0.20
-        };
-
-        const factor = emissionFactors[this.location] || 0.40;
-        const energyConsumptionKwh = this.calculateDailyEnergyConsumption();
-        return energyConsumptionKwh * factor;
-    }
+{
+  "name": "aiDataCenterEnergyMonitor",
+  "version": "1.0.0",
+  "description": "A TypeScript-based solution for monitoring and analyzing the energy consumption of AI data centers.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/aiDataCenterEnergyMonitor.git"
+  },
+  "keywords": [
+    "AI",
+    "data center",
+    "energy monitor",
+    "typescript",
+    "sustainability"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yourusername/aiDataCenterEnergyMonitor/issues"
+  },
+  "homepage": "https://github.com/yourusername/aiDataCenterEnergyMonitor#readme",
+  "devDependencies": {
+    "@types/jest": "^29.5.3",
+    "@types/node": "^18.16.14",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.5.0",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "axios": "^1.4.0"
+  }
 }
