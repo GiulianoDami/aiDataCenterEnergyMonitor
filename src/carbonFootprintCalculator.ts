@@ -2,27 +2,22 @@ import { DataCenterModel } from './dataCenterModel'
 import { EnergyConsumptionEstimator } from './energyConsumptionEstimator'
 import { ElectricityRateProvider } from './electricityRateProvider'
 
-interface CarbonIntensityData {
-    [region: string]: number // Carbon intensity in kgCO2/kWh
-}
+export class CarbonFootprintCalculator {
+    private dataCenterModel: DataCenterModel
+    private energyConsumptionEstimator: EnergyConsumptionEstimator
+    private electricityRateProvider: ElectricityRateProvider
 
-class CarbonFootprintCalculator {
-    private carbonIntensityData: CarbonIntensityData
-
-    constructor(carbonIntensityData: CarbonIntensityData) {
-        this.carbonIntensityData = carbonIntensityData
+    constructor(dataCenterModel: DataCenterModel, energyConsumptionEstimator: EnergyConsumptionEstimator, electricityRateProvider: ElectricityRateProvider) {
+        this.dataCenterModel = dataCenterModel
+        this.energyConsumptionEstimator = energyConsumptionEstimator
+        this.electricityRateProvider = electricityRateProvider
     }
 
-    async calculateCarbonFootprint(dataCenter: DataCenterModel, utilizationRate: number, pue: number): Promise<number> {
-        const energyConsumptionEstimator = new EnergyConsumptionEstimator()
-        const electricityRateProvider = new ElectricityRateProvider()
+    async calculateCarbonFootprint(): Promise<number> {
+        const energyConsumption = this.energyConsumptionEstimator.calculateEnergyConsumption(this.dataCenterModel)
+        const electricityRate = await this.electricityRateProvider.getElectricityRate(this.dataCenterModel.location)
+        const carbonIntensity = await this.electricityRateProvider.getCarbonIntensity(this.dataCenterModel.location)
 
-        const energyUsage = energyConsumptionEstimator.estimateEnergyUsage(dataCenter, utilizationRate, pue)
-        const electricityRate = await electricityRateProvider.getElectricityRate(dataCenter.location)
-
-        const carbonIntensity = this.carbonIntensityData[dataCenter.location] || 0.5 // Default to 0.5 kgCO2/kWh if not found
-        return energyUsage * carbonIntensity
+        return energyConsumption * carbonIntensity
     }
 }
-
-export { CarbonFootprintCalculator }
