@@ -1,45 +1,34 @@
-import express, { Express } from 'express'
+import express, { Express, Request, Response } from 'express'
 import bodyParser from 'body-parser'
-import cors from 'cors'
-import { calculateEnergyConsumption, calculateCost, calculateCarbonFootprint } from './energyCalculator'
-import { DataCenterModel } from './dataCenterModel'
+import { DataCenterModel } from './models/dataCenterModel'
+import { EnergyConsumptionCalculator } from './services/energyConsumptionCalculator'
+import { CostAnalyzer } from './services/costAnalyzer'
+import { CarbonFootprintCalculator } from './services/carbonFootprintCalculator'
 
 const app: Express = express()
 const port = process.env.PORT || 3000
 
-app.use(cors())
 app.use(bodyParser.json())
 
-app.post('/estimate-energy', (req, res) => {
+app.post('/calculate-energy', (req: Request, res: Response) => {
     const dataCenter: DataCenterModel = req.body
-    try {
-        const energyConsumption = calculateEnergyConsumption(dataCenter)
-        res.json({ energyConsumption })
-    } catch (error) {
-        res.status(400).json({ error: error.message })
-    }
+    const calculator = new EnergyConsumptionCalculator(dataCenter)
+    const energyUsage = calculator.calculateEnergyUsage()
+    res.json({ energyUsage })
 })
 
-app.post('/estimate-cost', (req, res) => {
+app.post('/analyze-cost', (req: Request, res: Response) => {
     const dataCenter: DataCenterModel = req.body
-    const location = req.query.location as string
-    try {
-        const cost = calculateCost(dataCenter, location)
-        res.json({ cost })
-    } catch (error) {
-        res.status(400).json({ error: error.message })
-    }
+    const costAnalyzer = new CostAnalyzer(dataCenter)
+    const cost = costAnalyzer.projectCost()
+    res.json({ cost })
 })
 
-app.post('/estimate-carbon-footprint', (req, res) => {
+app.post('/calculate-carbon-footprint', (req: Request, res: Response) => {
     const dataCenter: DataCenterModel = req.body
-    const location = req.query.location as string
-    try {
-        const carbonFootprint = calculateCarbonFootprint(dataCenter, location)
-        res.json({ carbonFootprint })
-    } catch (error) {
-        res.status(400).json({ error: error.message })
-    }
+    const carbonCalculator = new CarbonFootprintCalculator(dataCenter)
+    const carbonFootprint = carbonCalculator.calculateCarbonFootprint()
+    res.json({ carbonFootprint })
 })
 
 app.listen(port, () => {
