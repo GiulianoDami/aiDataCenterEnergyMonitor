@@ -1,72 +1,60 @@
-// src/datacenter.ts
-export class Server {
-    cpuCores: number;
-    gpuCount: number;
-    memoryGB: number;
-    powerDrawWatts: number;
-
-    constructor(options: { cpuCores: number; gpuCount: number; memoryGB: number; powerDrawWatts: number }) {
-        this.cpuCores = options.cpuCores;
-        this.gpuCount = options.gpuCount;
-        this.memoryGB = options.memoryGB;
-        this.powerDrawWatts = options.powerDrawWatts;
-    }
-}
+import { Server } from './server';
+import { EnergyCostCalculator } from './energyCostCalculator';
+import { CarbonFootprintCalculator } from './carbonFootprintCalculator';
 
 export class DataCenter {
-    name: string;
-    location: string;
-    servers: Server[];
-    utilization: number;
-    pue: number;
+    private servers: Server[];
+    private pue: number;
+    private location: string;
 
-    constructor(options: { name: string; location: string; servers: Server[]; pue?: number }) {
-        this.name = options.name;
-        this.location = options.location;
-        this.servers = options.servers;
-        this.utilization = 50; // Default utilization
-        this.pue = options.pue || 1.5; // Default PUE
+    constructor(servers: Server[], pue: number, location: string) {
+        this.servers = servers;
+        this.pue = pue;
+        this.location = location;
     }
 
-    setUtilization(utilization: number) {
-        this.utilization = utilization;
+    public getEstimatedEnergyConsumption(hours: number): number {
+        const totalServerPower = this.servers.reduce((sum, server) => sum + server.getPowerUsage(), 0);
+        return totalServerPower * this.pue * hours;
     }
 
-    calculateDailyEnergyConsumption(): number {
-        let totalPowerDraw = 0;
-        for (const server of this.servers) {
-            totalPowerDraw += server.powerDrawWatts;
-        }
-
-        const dailyEnergyConsumption = (totalPowerDraw * this.utilization / 100) * 24 / 1000; // kWh
-        return dailyEnergyConsumption * this.pue;
+    public getProjectedCost(hours: number): number {
+        const energyConsumption = this.getEstimatedEnergyConsumption(hours);
+        const costCalculator = new EnergyCostCalculator(this.location);
+        return costCalculator.calculateCost(energyConsumption);
     }
 
-    calculateDailyCost(): number {
-        // Stub electricity rate data (replace with API integration)
-        const electricityRates: { [location: string]: number } = {
-            'Virginia, USA': 0.15, // Example rate in $/kWh
-            'California, USA': 0.25,
-            'Texas, USA': 0.12,
-            'Europe, Germany': 0.30
-        };
-
-        const rate = electricityRates[this.location] || 0.20; // Default rate
-        const dailyEnergyConsumption = this.calculateDailyEnergyConsumption();
-        return dailyEnergyConsumption * rate;
+    public getEstimatedCarbonFootprint(hours: number): number {
+        const energyConsumption = this.getEstimatedEnergyConsumption(hours);
+        const carbonCalculator = new CarbonFootprintCalculator(this.location);
+        return carbonCalculator.calculateFootprint(energyConsumption);
     }
 
-    calculateCarbonFootprint(): number {
-        // Stub carbon emission factors (replace with more accurate data)
-        const carbonEmissionFactors: { [source: string]: number } = {
-            'coal': 0.9, // kg CO2e/kWh
-            'gas': 0.4,
-            'renewable': 0.1
-        };
+    public addServer(server: Server): void {
+        this.servers.push(server);
+    }
 
-        const energySource = 'gas'; // Example energy source
-        const emissionFactor = carbonEmissionFactors[energySource] || 0.5; // Default factor
-        const dailyEnergyConsumption = this.calculateDailyEnergyConsumption();
-        return dailyEnergyConsumption * emissionFactor;
+    public removeServer(serverId: string): void {
+        this.servers = this.servers.filter(server => server.id !== serverId);
+    }
+
+    public getServers(): Server[] {
+        return this.servers;
+    }
+
+    public setPue(newPue: number): void {
+        this.pue = newPue;
+    }
+
+    public getPue(): number {
+        return this.pue;
+    }
+
+    public setLocation(newLocation: string): void {
+        this.location = newLocation;
+    }
+
+    public getLocation(): string {
+        return this.location;
     }
 }
