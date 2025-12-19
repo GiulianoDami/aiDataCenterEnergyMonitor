@@ -10,7 +10,7 @@ class ElectricityRates {
 
     constructor() {}
 
-    async fetchRates(location: string): Promise<void> {
+    public async fetchRates(location: string): Promise<void> {
         try {
             const response = await axios.get(`https://api.example.com/electricity-rates?location=${location}`);
             this.rates.push({ location, rate: response.data.rate });
@@ -19,13 +19,13 @@ class ElectricityRates {
         }
     }
 
-    getRate(location: string): number | undefined {
+    public getRate(location: string): number | undefined {
         const rateInfo = this.rates.find(rate => rate.location === location);
         return rateInfo ? rateInfo.rate : undefined;
     }
 
-    clearRates(): void {
-        this.rates = [];
+    public getAllRates(): ElectricityRate[] {
+        return this.rates;
     }
 }
 
