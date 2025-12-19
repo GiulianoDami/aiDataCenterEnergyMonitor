@@ -12,20 +12,18 @@ export interface DataCenter {
     pue: number; // Power Usage Effectiveness
 }
 
-export interface EnergyConsumption {
-    totalEnergy: number; // in kWh
+export interface EnergyConsumptionReport {
+    totalEnergyConsumed: number; // in kWh
     cost: number; // in currency unit
     carbonFootprint: number; // in kg CO2
 }
 
-export interface ElectricityRates {
-    [location: string]: number; // rate per kWh in currency unit
+export interface ElectricityRate {
+    location: string;
+    ratePerKWh: number; // in currency unit per kWh
 }
 
-export interface EnergySource {
-    [location: string]: string; // type of energy source (e.g., 'coal', 'nuclear', 'renewable')
-}
-
-export interface CarbonEmissionFactors {
-    [energySource: string]: number; // emission factor in kg CO2/kWh
+export interface CarbonEmissionFactor {
+    location: string;
+    factor: number; // in kg CO2 per kWh
 }
