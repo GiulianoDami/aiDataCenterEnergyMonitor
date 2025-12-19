@@ -1,0 +1,59 @@
+// src/datacenter.ts
+
+export class Server {
+    cpuCores: number;
+    gpuCount: number;
+    memoryGB: number;
+    powerDrawWatts: number;
+
+    constructor({ cpuCores, gpuCount, memoryGB, powerDrawWatts }: { cpuCores: number, gpuCount: number, memoryGB: number, powerDrawWatts: number }) {
+        this.cpuCores = cpuCores;
+        this.gpuCount = gpuCount;
+        this.memoryGB = memoryGB;
+        this.powerDrawWatts = powerDrawWatts;
+    }
+}
+
+export class DataCenter {
+    name: string;
+    location: string;
+    servers: Server[];
+    utilization: number;
+    pue: number;
+    electricityRate: number; // $/kWh
+    carbonEmissionFactor: number; // kg CO2e / kWh
+
+    constructor({ name, location, servers, pue = 1.5, electricityRate = 0.15, carbonEmissionFactor = 0.5 }: { name: string, location: string, servers: Server[], pue?: number, electricityRate?: number, carbonEmissionFactor?: number }) {
+        this.name = name;
+        this.location = location;
+        this.servers = servers;
+        this.utilization = 50;
+        this.pue = pue;
+        this.electricityRate = electricityRate;
+        this.carbonEmissionFactor = carbonEmissionFactor;
+    }
+
+    setUtilization(utilization: number) {
+        this.utilization = utilization;
+    }
+
+    calculateDailyEnergyConsumption(): number {
+        let totalPowerDraw = 0;
+        for (const server of this.servers) {
+            totalPowerDraw += server.powerDrawWatts;
+        }
+
+        const dailyEnergyConsumption = (totalPowerDraw * this.utilization / 100) * 24 / 1000; // kWh
+        return dailyEnergyConsumption * this.pue;
+    }
+
+    calculateDailyCost(): number {
+        const energyConsumption = this.calculateDailyEnergyConsumption();
+        return energyConsumption * this.electricityRate;
+    }
+
+    calculateCarbonFootprint(): number {
+        const energyConsumption = this.calculateDailyEnergyConsumption();
+        return energyConsumption * this.carbonEmissionFactor;
+    }
+}
